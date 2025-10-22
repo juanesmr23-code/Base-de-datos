@@ -1,0 +1,70 @@
+from conexion import conectar
+
+class Producto:
+    def __init__(self, nombre, precio, stock, categoria):
+        self.nombre = nombre
+        self.precio = precio
+        self.stock = stock
+        self.categoria = categoria
+
+    def guardar(self):
+        conexion = conectar()
+        if conexion:
+            cursor = conexion.cursor()
+            query = "INSERT INTO productos (nombre, precio, stock, categoria) VALUES (%s, %s, %s, %s)"
+            valores = (self.nombre, self.precio, self.stock, self.categoria)
+            cursor.execute(query, valores)
+            conexion.commit()
+            cursor.close()
+            conexion.close()
+            return True
+        return False
+
+    @staticmethod
+    def listar():
+        conexion = conectar()
+        if conexion:
+            cursor = conexion.cursor()
+            cursor.execute("SELECT * FROM productos")
+            resultados = cursor.fetchall()
+            cursor.close()
+            conexion.close()
+            return resultados
+        return []
+
+    @staticmethod
+    def buscar_por_id(id_producto):
+        conexion = conectar()
+        if conexion:
+            cursor = conexion.cursor()
+            cursor.execute("SELECT * FROM productos WHERE id = %s", (id_producto,))
+            resultado = cursor.fetchone()
+            cursor.close()
+            conexion.close()
+            return resultado
+        return None
+
+    def actualizar(self, id_producto):
+        conexion = conectar()
+        if conexion:
+            cursor = conexion.cursor()
+            query = "UPDATE productos SET nombre = %s, precio = %s, stock = %s, categoria = %s WHERE id = %s"
+            valores = (self.nombre, self.precio, self.stock, self.categoria, id_producto)
+            cursor.execute(query, valores)
+            conexion.commit()
+            cursor.close()
+            conexion.close()
+            return True
+        return False
+
+    @staticmethod
+    def eliminar(id_producto):
+        conexion = conectar()
+        if conexion:
+            cursor = conexion.cursor()
+            cursor.execute("DELETE FROM productos WHERE id = %s", (id_producto,))
+            conexion.commit()
+            cursor.close()
+            conexion.close()
+            return True
+        return False
